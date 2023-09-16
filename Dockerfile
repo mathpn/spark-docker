@@ -1,22 +1,19 @@
-FROM python:3.11.5-bookworm AS builder
+FROM python:3.11.5-slim-bookworm AS builder
 
 RUN apt-get update && apt-get install -y curl vim wget software-properties-common ssh net-tools ca-certificates openjdk-17-jdk
-RUN pip install numpy matplotlib seaborn scipy pandas simpy
+RUN pip install numpy pandas pyarrow numpy py4j
 
-# Fix the value of PYTHONHASHSEED
-# Note: this is needed when you use Python 3.3 or greater
+# fix the value of PYTHONHASHSEED
+# NOTE this is needed when you use Python >= 3.3
 ENV SPARK_VERSION=3.4.1 \
 HADOOP_VERSION=3 \
 SPARK_HOME=/opt/spark \
-PYTHONHASHSEED=1
+PYTHONHASHSEED=0
 
 RUN wget --no-verbose -O apache-spark.tgz "https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
 && mkdir -p /opt/spark \
 && tar -xf apache-spark.tgz -C /opt/spark --strip-components=1 \
 && rm apache-spark.tgz
-
-
-FROM builder as apache-spark
 
 WORKDIR /opt/spark
 

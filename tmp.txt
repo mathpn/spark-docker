@@ -1,2 +1,0 @@
-docker run -it -p 8080:8080 apache/spark-py /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
-
